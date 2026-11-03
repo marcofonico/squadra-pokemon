@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#8fd63f">
+  <title>Pokémon Team Builder · Ottava generazione</title>
+  <meta name="description" content="Crea la tua squadra Pokémon e analizza debolezze, resistenze e coperture offensive (Spada/Scudo).">
+  <link rel="icon" href="assets/icons/25.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- Sidebar: ricerca, generazioni, giochi -->
+    <aside class="sidebar" id="filters" aria-label="Filtri">
+      <button class="drawer-close" data-action="close-filters" aria-label="Chiudi filtri">✕</button>
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+        <input id="search" type="search" placeholder="Cerca Pokémon…" autocomplete="off" spellcheck="false">
+      </label>
+
+      <section>
+        <h2 class="side-title">Gen.</h2>
+        <div class="gen-grid" id="genGrid"></div>
+      </section>
+
+      <section>
+        <h2 class="side-title">Giochi</h2>
+        <ul class="games" id="games"></ul>
+        <p class="side-note">Elenco in base alla generazione. Per ora è disponibile solo l'ottava.</p>
+      </section>
+    </aside>
+
+    <!-- Centro: vista A/B, matrice dei tipi, squadra -->
+    <main class="main" id="main">
+      <header class="topbar">
+        <h1>Squadra <small>Gen VIII</small></h1>
+        <div class="viewswitch" role="group" aria-label="Vista copertura">
+          <button class="vbtn" data-action="view" data-view="def" aria-pressed="true">
+            <i class="abtn">A</i><span>Difensiva</span>
+          </button>
+          <button class="vbtn" data-action="view" data-view="off" aria-pressed="false">
+            <i class="abtn">B</i><span>Offensiva</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="card matrix-card" aria-live="polite">
+        <div class="matrix" id="matrix"></div>
+        <p class="legend" id="legend"></p>
+      </section>
+
+      <section class="team" id="team" aria-label="Squadra"></section>
+
+      <!-- Box di selezione (si apre dagli slot) -->
+      <div class="box" id="box" hidden role="dialog" aria-modal="true" aria-labelledby="boxTitle">
+        <div class="box-head">
+          <button class="pill ghost mobile-only" data-action="open-filters">Filtri</button>
+          <h2 id="boxTitle">Box</h2>
+          <div class="pager">
+            <button class="round" data-action="page-prev" aria-label="Pagina precedente">◀</button>
+            <span id="pageLabel">1-30</span>
+            <button class="round" data-action="page-next" aria-label="Pagina successiva">▶</button>
+          </div>
+          <button class="round close" data-action="close-box" aria-label="Chiudi box">✕</button>
+        </div>
+        <div class="box-grid" id="boxGrid"></div>
+        <div class="box-info" id="boxInfo"></div>
+        <div class="box-foot">
+          <button class="pill danger" id="boxRemove" data-action="remove-slot">Rimuovi dallo slot</button>
+          <span class="count" id="boxCount"></span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Destra: dettaglio Pokémon + sintesi squadra -->
+    <aside class="detail" id="detail" aria-label="Dettaglio Pokémon"></aside>
+
+    <!-- Barra comandi in basso (come il box di Spada/Scudo) -->
+    <footer class="hintbar">
+      <span><i class="abtn">A</i> Vista difensiva</span>
+      <span><i class="abtn">B</i> Vista offensiva</span>
+      <button class="hint-btn" data-action="clear-team"><i class="abtn">✕</i> Svuota squadra</button>
+      <span class="credit">Dati e sprite: <a href="https://pokeapi.co" target="_blank" rel="noopener">PokéAPI</a></span>
+    </footer>
+  </div>
+
+  <div class="drawer-backdrop" id="backdrop" data-action="close-filters"></div>
+  <div class="loading" id="loading">Caricamento Pokédex…</div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
