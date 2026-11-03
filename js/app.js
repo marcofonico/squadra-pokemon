@@ -1,4 +1,4 @@
-import { Calc, fmtMult } from './calc.js?v=2';
+import { Calc, fmtMult } from './calc.js?v=4';
 
 /* ---------- costanti ---------- */
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];

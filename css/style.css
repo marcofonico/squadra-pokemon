@@ -579,3 +579,15 @@ button:focus-visible, select:focus-visible, input:focus-visible, [role="button"]
   .bars div { grid-template-columns: 26px 1fr 24px; gap: 3px; font-size: 10.5px; }
   .bsttot { font-size: 11px; }
 }
+
+/* nessuna animazione di apertura: alcuni browser lasciavano la finestra trasparente finché non si digitava */
+.picker, .box { animation: none !important; opacity: 1 !important; }
+
+/* fix: la finestra di selezione deve avere un'altezza massima assoluta (con l'elenco lungo finiva fuori schermo) */
+.picker-wrap { display: flex; align-items: center; justify-content: center; }
+.picker { max-height: min(640px, calc(100vh - 32px)); max-height: min(640px, calc(100dvh - 32px)); min-height: 0; }
+.picker-list { flex: 1 1 auto; min-height: 0; }
+@media (max-width: 760px) {
+  .picker-wrap { align-items: flex-end; }
+  .picker { max-height: 86vh; max-height: 86dvh; }
+}
