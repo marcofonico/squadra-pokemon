@@ -91,8 +91,14 @@ export class Calc {
     return rows;
   }
 
+  /** Statistiche effettive: valori base, con eventuali modifiche dell'utente. */
+  stats(slot) {
+    const base = this.pokeById.get(slot.pid).stats;
+    return slot.stats ? base.map((b, i) => slot.stats[i] ?? b) : base;
+  }
+
   statAverages(team) {
-    const list = team.filter(Boolean).map(s => this.pokeById.get(s.pid).stats);
+    const list = team.filter(Boolean).map(s => this.stats(s));
     if (!list.length) return null;
     return [0, 1, 2, 3, 4, 5].map(i => list.reduce((a, s) => a + s[i], 0) / list.length);
   }

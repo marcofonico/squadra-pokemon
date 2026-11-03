@@ -32,26 +32,46 @@
       </section>
     </aside>
 
-    <!-- Centro: vista A/B, matrice dei tipi, squadra -->
+    <!-- Centro -->
     <main class="main" id="main">
-      <header class="topbar">
-        <h1>Squadra <small>Gen VIII</small></h1>
-        <div class="viewswitch" role="group" aria-label="Vista copertura">
-          <button class="vbtn" data-action="view" data-view="def" aria-pressed="true">
-            <i class="abtn">A</i><span>Difensiva</span>
-          </button>
-          <button class="vbtn" data-action="view" data-view="off" aria-pressed="false">
-            <i class="abtn">B</i><span>Offensiva</span>
-          </button>
+      <nav class="navbar" aria-label="Sezioni">
+        <div class="tabs" role="group">
+          <button class="tab" data-action="mode" data-mode="build" aria-pressed="true">Costruttore</button>
+          <button class="tab" data-action="mode" data-mode="compare" aria-pressed="false">Squadre e confronto</button>
         </div>
-      </header>
+        <div class="teamsw" id="teamSw">
+          <select id="teamSel" class="select" aria-label="Squadra salvata"></select>
+          <button class="pill ghost sm" data-action="new-team">+ Nuova</button>
+        </div>
+      </nav>
 
-      <section class="card matrix-card" aria-live="polite">
-        <div class="matrix" id="matrix"></div>
-        <p class="legend" id="legend"></p>
-      </section>
+      <!-- Vista costruttore -->
+      <div id="buildView" class="view">
+        <header class="topbar">
+          <div class="nameedit">
+            <input id="teamName" class="team-name" maxlength="32" aria-label="Nome squadra" spellcheck="false" autocomplete="off">
+            <small class="saved" id="savedNote">✓ Salvata automaticamente</small>
+          </div>
+          <div class="viewswitch" role="group" aria-label="Vista copertura">
+            <button class="vbtn" data-action="view" data-view="def" aria-pressed="true">
+              <i class="abtn">A</i><span>Difensiva</span>
+            </button>
+            <button class="vbtn" data-action="view" data-view="off" aria-pressed="false">
+              <i class="abtn">B</i><span>Offensiva</span>
+            </button>
+          </div>
+        </header>
 
-      <section class="team" id="team" aria-label="Squadra"></section>
+        <section class="card matrix-card" aria-live="polite">
+          <div class="matrix" id="matrix"></div>
+          <p class="legend" id="legend"></p>
+        </section>
+
+        <section class="team" id="team" aria-label="Squadra"></section>
+      </div>
+
+      <!-- Vista confronto -->
+      <div id="compareView" class="view" hidden></div>
 
       <!-- Box di selezione (si apre dagli slot) -->
       <div class="box" id="box" hidden role="dialog" aria-modal="true" aria-labelledby="boxTitle">
@@ -65,6 +85,10 @@
           </div>
           <button class="round close" data-action="close-box" aria-label="Chiudi box">✕</button>
         </div>
+        <label class="search box-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+          <input id="boxSearch" type="search" placeholder="Cerca Pokémon…" autocomplete="off" spellcheck="false">
+        </label>
         <div class="box-grid" id="boxGrid"></div>
         <div class="box-info" id="boxInfo"></div>
         <div class="box-foot">
@@ -84,6 +108,22 @@
       <button class="hint-btn" data-action="clear-team"><i class="abtn">✕</i> Svuota squadra</button>
       <span class="credit">Dati e sprite: <a href="https://pokeapi.co" target="_blank" rel="noopener">PokéAPI</a></span>
     </footer>
+  </div>
+
+  <!-- Selettore con ricerca (mosse e oggetti) -->
+  <div class="picker-wrap" id="picker" hidden>
+    <div class="picker-back" data-action="close-picker"></div>
+    <div class="picker" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+      <div class="picker-head">
+        <h2 id="pickerTitle">Scegli</h2>
+        <button class="round close" data-action="close-picker" aria-label="Chiudi">✕</button>
+      </div>
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+        <input id="pickerSearch" type="search" placeholder="Cerca…" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="picker-list" id="pickerList"></div>
+    </div>
   </div>
 
   <div class="drawer-backdrop" id="backdrop" data-action="close-filters"></div>
