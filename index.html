@@ -16,7 +16,7 @@
   <meta name="twitter:title" content="Crea la tua squadra Pokemon: Generatore e Confronto">
   <meta name="twitter:description" content="Genera la tua squadra pokemon in modo immediato: scegli le abilità, gli oggetti e modifica le stat. Cura la tua squadra in ogni dettaglio.">
   <link rel="icon" href="assets/icons/25.png">
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
   <div class="app" id="app">
@@ -60,7 +60,7 @@
         <header class="topbar">
           <div class="nameedit">
             <input id="teamName" class="team-name" maxlength="32" aria-label="Nome squadra" spellcheck="false" autocomplete="off">
-            <small class="saved" id="savedNote">✓ Salvata automaticamente</small>
+            <small class="autosave-note" id="savedNote">✓ Salvata automaticamente</small>
           </div>
           <div class="viewswitch" role="group" aria-label="Vista copertura">
             <button class="vbtn" data-action="view" data-view="def" aria-pressed="true">
@@ -88,12 +88,16 @@
         <div class="box-head">
           <button class="pill ghost mobile-only" data-action="open-filters">Filtri</button>
           <h2 id="boxTitle">Box</h2>
-          <div class="pager">
+          <div class="pager" id="pager">
             <button class="round" data-action="page-prev" aria-label="Pagina precedente">◀</button>
             <span id="pageLabel">1-30</span>
             <button class="round" data-action="page-next" aria-label="Pagina successiva">▶</button>
           </div>
           <button class="round close" data-action="close-box" aria-label="Chiudi box">✕</button>
+        </div>
+        <div class="btabs" role="group" aria-label="Elenco Pokémon">
+          <button class="btab" id="btabAll" data-action="box-tab" data-tab="all" aria-pressed="true">Tutti i Pokémon</button>
+          <button class="btab" id="btabSaved" data-action="box-tab" data-tab="saved" aria-pressed="false">Salvati (0)</button>
         </div>
         <label class="search box-search">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
@@ -139,6 +143,6 @@
   <div class="drawer-backdrop" id="backdrop" data-action="close-filters"></div>
   <div class="loading" id="loading">Caricamento Pokédex…</div>
 
-  <script type="module" src="js/app.js?v=5"></script>
+  <script type="module" src="js/app.js?v=8"></script>
 </body>
 </html>

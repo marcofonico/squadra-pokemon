@@ -423,7 +423,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, [role="button"]
 }
 .team-name:hover { border-bottom-color: var(--lime-d); }
 .team-name:focus { border-bottom: 3px solid var(--lime-d); background: rgba(143, 214, 63, .12); }
-.saved { color: var(--mute); font-size: 12px; font-weight: 700; }
+.autosave-note { color: var(--mute); font-size: 12px; font-weight: 700; }
 .topbar h1 { display: none; }
 
 .box-search { box-shadow: var(--shadow); }
@@ -551,7 +551,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, [role="button"]
   .teamsw .select { flex: 1; width: auto; max-width: none; }
   .topbar { flex-wrap: wrap; }
   .team-name { font-size: 20px; width: min(240px, 64vw); }
-  .saved { display: none; }
+  .autosave-note { display: none; }
   .picker-wrap { padding: 0; align-items: end; }
   .picker { width: 100%; max-height: 86dvh; border-radius: 24px 24px 0 0; padding-bottom: max(14px, env(safe-area-inset-bottom)); }
   .tcard { flex-wrap: wrap; }
@@ -594,3 +594,30 @@ button:focus-visible, select:focus-visible, input:focus-visible, [role="button"]
 
 .site-title { margin: 0 0 12px; font-size: 15px; line-height: 1.25; font-weight: 800; color: #fff; text-shadow: 0 1px 0 var(--lime-dd); }
 @media (max-width: 1180px) { .site-title { margin-right: 44px; } }
+
+/* ---- Pokémon salvati ---- */
+.btabs { display: flex; gap: 4px; background: #fff; padding: 4px; border-radius: 999px; box-shadow: var(--shadow); align-self: flex-start; }
+.btab { padding: 8px 16px; border-radius: 999px; font-size: 14px; }
+.btab[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.lib-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.lib-row small { color: var(--mute); font-size: 12px; }
+.lib-row.ok { background: #eaf8d8; border-radius: 14px; padding: 8px 12px; color: var(--lime-dd); font-size: 13px; }
+.box-grid.saved { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; align-content: start; }
+.scard { position: relative; display: flex; align-items: center; gap: 12px; background: #f4f7f1; border-radius: 18px; padding: 10px 44px 10px 10px; cursor: pointer; text-align: left; border: 3px solid transparent; min-width: 0; }
+.scard:hover, .scard:focus-visible { background: var(--lime-l); border-color: var(--lime-d); }
+.scard .sprite { width: 60px; height: 60px; flex: none; }
+.scard .sprite img { width: 56px; }
+.sbody { min-width: 0; display: grid; gap: 4px; flex: 1; }
+.sname { border: 0; background: transparent; font-weight: 800; font-size: 16px; padding: 2px 4px; margin-left: -4px; border-radius: 8px; width: 100%; min-width: 0; color: var(--ink); }
+.sname:hover { background: rgba(255,255,255,.7); }
+.sname:focus { background: #fff; outline: 2px solid var(--lime-d); }
+.scard .types { align-items: center; gap: 4px; }
+.scard .types .tb { width: 66px; min-width: 0; }
+.scard .types small { font-size: 11px; color: var(--mute); }
+.scard .types small.mod { color: #8a4b00; background: #ffe9b8; padding: 1px 7px; border-radius: 999px; }
+.sline { margin: 0; font-size: 12.5px; color: #4a535c; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sline.mv { color: var(--mute); font-weight: 600; font-size: 12px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.scard .round.sm { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; }
+@media (max-width: 760px) { .box-grid.saved { grid-template-columns: 1fr; } .btab { padding: 7px 12px; font-size: 13px; } }
+.sidebar:not(.open) { box-shadow: none; }
+.scard .types { justify-content: flex-start; }

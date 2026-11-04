@@ -1,4 +1,4 @@
-import { Calc, fmtMult } from './calc.js?v=5';
+import { Calc, fmtMult } from './calc.js?v=8';
 
 /* ---------- costanti ---------- */
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
@@ -27,7 +27,8 @@ const state = {
   mode: 'build',        // 'build' | 'compare'
   selected: 0,
   view: 'def',
-  box: { open: false, slot: 0, page: 0 },
+  box: { open: false, slot: 0, page: 0, tab: 'all' },   // tab: 'all' | 'saved'
+  library: [],          // Pokémon salvati: {id,label,pid,ability,item,moves,stats,saved}
   filter: { q: '', gen: null, dex: new Set(GAMES.map(g => g.dex)) },
   picker: null,         // {kind:'move'|'item', k, q}
 };
@@ -63,7 +64,12 @@ function cleanSlot(s) {
   if (!s || !calc.pokeById.has(s.pid)) return null;
   const st = Array.isArray(s.stats) && s.stats.length === 6 ? s.stats.map(n => Math.min(255, Math.max(1, n | 0))) : null;
   const m = [...(s.moves || []), null, null, null, null].slice(0, 4).map(id => (id && moves[id] ? id : null));
-  return { pid: s.pid, ability: s.ability ?? null, item: s.item != null && calc.itemById.has(s.item) ? s.item : null, moves: m, stats: st };
+  return { pid: s.pid, ability: s.ability ?? null, item: s.item != null && calc.itemById.has(s.item) ? s.item : null, moves: m, stats: st, lib: s.lib || null };
+}
+function cleanLib(e) {
+  const s = cleanSlot(e);
+  if (!s) return null;
+  return { id: e.id || uid(), label: String(e.label || poke(s.pid).name).slice(0, 32), pid: s.pid, ability: s.ability, item: s.item, moves: s.moves, stats: s.stats, saved: e.saved || Date.now() };
 }
 function cleanTeam(t) {
   const slots = [...(t.slots || [])].slice(0, 6).map(cleanSlot);
@@ -74,7 +80,7 @@ function save() {
   const t = cur();
   if (t) t.updated = Date.now();
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify({ v: 2, teams: state.teams, currentId: state.currentId, compare: state.compare, selected: state.selected, view: state.view }));
+    localStorage.setItem(STORE_KEY, JSON.stringify({ v: 2, teams: state.teams, currentId: state.currentId, compare: state.compare, selected: state.selected, view: state.view, library: state.library }));
   } catch { /* storage non disponibile */ }
 }
 function restore() {
@@ -86,6 +92,8 @@ function restore() {
       state.compare = (raw.compare || []).filter(id => state.teams.some(t => t.id === id)).slice(0, MAX_COMPARE);
       state.selected = Math.min(5, Math.max(0, raw.selected | 0));
       state.view = raw.view === 'off' ? 'off' : 'def';
+      state.library = (raw.library || []).map(cleanLib).filter(Boolean);
+      state.teams.forEach(t => t.slots.forEach(sl => { if (sl && sl.lib && !state.library.some(x => x.id === sl.lib)) sl.lib = null; }));
       return;
     }
     // migrazione dalla prima versione (una sola squadra)
@@ -100,6 +108,27 @@ function restore() {
   } catch { /* dati corrotti: si riparte da zero */ }
   const t = newTeamObj('Squadra 1');
   state.teams = [t]; state.currentId = t.id;
+}
+
+/* ---------- libreria Pokémon salvati ---------- */
+const cfgKey = s => JSON.stringify([s.pid, s.ability ?? null, s.item ?? null, (s.moves || []).map(m => m || null), s.stats || null]);
+const libById = id => state.library.find(x => x.id === id);
+function slotFromLib(e) {
+  return { pid: e.pid, ability: e.ability, item: e.item, moves: [...e.moves], stats: e.stats ? [...e.stats] : null, lib: e.id };
+}
+function uniqueLabel(base, exceptId) {
+  let l = base, n = 2;
+  while (state.library.some(x => x.label === l && x.id !== exceptId)) l = `${base.slice(0, 28)} (${n++})`;
+  return l;
+}
+function fillEntry(e, s) { e.pid = s.pid; e.ability = s.ability; e.item = s.item; e.moves = [...s.moves]; e.stats = s.stats ? [...s.stats] : null; e.saved = Date.now(); }
+function libRowHTML(s) {
+  const linked = s.lib ? libById(s.lib) : null;
+  const same = state.library.find(x => cfgKey(x) === cfgKey(s));
+  if (linked && cfgKey(linked) === cfgKey(s)) return `<div class="lib-row ok"><span>★ Salvato come “${esc(linked.label)}”</span></div>`;
+  if (linked) return `<div class="lib-row"><button class="pill sm" data-action="lib-update">Aggiorna “${esc(linked.label)}”</button><button class="pill ghost sm" data-action="lib-save">Salva come nuovo</button></div>`;
+  if (same) return `<div class="lib-row ok"><span>★ Già salvato come “${esc(same.label)}”</span></div>`;
+  return `<div class="lib-row"><button class="pill sm" data-action="lib-save">☆ Salva Pokémon</button><small>Per riusarlo senza reinserire tutto</small></div>`;
 }
 
 /* ---------- filtro box ---------- */
@@ -281,6 +310,7 @@ function renderDetail() {
         <span class="types">${p.types.map(t => typeBadge(t)).join('')}</span>
       </div>
       <div class="d-body">
+        ${libRowHTML(s)}
         <div class="radar-wrap">${radarSVG(series, true)}
           <p class="radar-note">Totale <b>${bst}</b>${edited ? ' <em class="edited">(modificato)</em>' : ''}${multi ? ' · tratteggio: media squadra' : ''}</p></div>
 
@@ -406,8 +436,39 @@ function renderCompare() {
 }
 
 /* ---------- render: box ---------- */
+function renderSaved() {
+  const slot = state.box.slot;
+  const q = norm(state.filter.q.trim()).replace(/^#/, '');
+  const list = state.library.filter(e => !q || norm(e.label + ' ' + poke(e.pid).name).includes(q));
+  $('#boxTitle').textContent = `Salvati · slot ${slot + 1}`;
+  $('#boxCount').textContent = `${list.length} di ${state.library.length} salvati`;
+  $('#boxGrid').innerHTML = list.length ? list.map(e => {
+    const p = poke(e.pid);
+    const ab = e.ability != null ? core.abilities[e.ability]?.name : null;
+    const it = e.item != null ? calc.itemById.get(e.item)?.name : null;
+    const mv = e.moves.filter(Boolean).map(id => moves[id][0]);
+    return `<div class="scard" data-action="lib-use" data-id="${e.id}" role="button" tabindex="0" title="Inserisci nello slot ${slot + 1}">
+      <span class="sprite"><img src="${iconUrl(p.id)}" alt="" width="68" height="56"></span>
+      <div class="sbody">
+        <input class="sname" value="${esc(e.label)}" maxlength="32" data-lib-name="${e.id}" aria-label="Nome del salvataggio" spellcheck="false">
+        <span class="types">${p.types.map(t => typeBadge(t, true)).join('')}${e.label !== p.name ? `<small class="sp">${esc(p.name)}</small>` : ''}${e.stats ? '<small class="mod">stat modificate</small>' : ''}</span>
+        <p class="sline"><b>${ab ? esc(ab) : '—'}</b> · ${it ? esc(it) : 'nessun oggetto'}</p>
+        <p class="sline mv">${mv.length ? mv.map(esc).join(' · ') : 'nessuna mossa'}</p>
+      </div>
+      <button class="round sm" data-action="lib-del" data-id="${e.id}" aria-label="Elimina ${esc(e.label)}">✕</button>
+    </div>`;
+  }).join('') : `<p class="nores">${state.library.length ? 'Nessun salvato corrisponde alla ricerca.' : 'Nessun Pokémon salvato. Personalizza un Pokémon e premi “Salva Pokémon” nel pannello dettagli.'}</p>`;
+  $('#boxRemove').hidden = !team()[slot];
+}
 function renderBox() {
   if (!state.box.open) return;
+  const saved = state.box.tab === 'saved';
+  document.querySelectorAll('.btab').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === state.box.tab)));
+  $('#btabSaved').textContent = `Salvati (${state.library.length})`;
+  $('#boxGrid').classList.toggle('saved', saved);
+  $('#pager').hidden = saved; $('#boxInfo').hidden = saved;
+  $('#boxSearch').placeholder = saved ? 'Cerca tra i salvati…' : 'Cerca Pokémon…';
+  if (saved) { renderSaved(); return; }
   const list = filtered();
   const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
   state.box.page = Math.min(state.box.page, pages - 1);
@@ -440,7 +501,7 @@ function syncSearch(value, source) {
   if (source !== 'box') $('#boxSearch').value = value;
 }
 function openBox(slot) {
-  state.box = { open: true, slot, page: 0 };
+  state.box = { open: true, slot, page: 0, tab: state.box.tab || 'all' };
   state.selected = slot;
   $('#box').hidden = false;
   $('#boxSearch').value = state.filter.q;
@@ -585,7 +646,7 @@ document.addEventListener('click', e => {
     case 'remove-slot': team()[state.box.slot] = null; save(); closeBox(); renderAll(); break;
     case 'pick': {
       const pid = +el.dataset.pid, slot = state.box.slot, p = poke(pid);
-      team()[slot] = { pid, ability: defaultAbility(p), item: null, moves: [null, null, null, null], stats: null };
+      team()[slot] = { pid, ability: defaultAbility(p), item: null, moves: [null, null, null, null], stats: null, lib: null };
       state.selected = slot;
       save(); closeBox(); renderAll();
       break;
@@ -609,6 +670,35 @@ document.addEventListener('click', e => {
       if (pk.kind === 'move') s.moves[pk.k] = id; else s.item = id;
       closePicker(); commit(); break;
     }
+    case 'box-tab': state.box.tab = el.dataset.tab; state.box.page = 0; renderBox(); $('#boxGrid').scrollTop = 0; break;
+    case 'lib-use': {
+      if (e.target.closest('input, button[data-action="lib-del"]')) break;
+      const en = libById(el.dataset.id);
+      if (!en) break;
+      const slot = state.box.slot;
+      team()[slot] = slotFromLib(en);
+      state.selected = slot; save(); closeBox(); renderAll();
+      break;
+    }
+    case 'lib-del': {
+      e.stopPropagation();
+      const en = libById(el.dataset.id);
+      if (!en || !confirm(`Eliminare “${en.label}” dai salvati?`)) break;
+      state.library = state.library.filter(x => x.id !== en.id);
+      state.teams.forEach(t => t.slots.forEach(sl => { if (sl && sl.lib === en.id) sl.lib = null; }));
+      save(); renderAll(); break;
+    }
+    case 'lib-save': {
+      const sl = team()[state.selected];
+      const en = { id: uid(), label: uniqueLabel(poke(sl.pid).name), saved: Date.now() };
+      fillEntry(en, sl);
+      state.library.unshift(en); sl.lib = en.id; commit(); break;
+    }
+    case 'lib-update': {
+      const sl = team()[state.selected], en = libById(sl.lib);
+      if (en) { fillEntry(en, sl); commit(); }
+      break;
+    }
     case 'open-filters': openFilters(); break;
     case 'close-filters': closeFilters(); break;
     case 'clear-team':
@@ -620,6 +710,11 @@ function ensureBox() { if (state.mode === 'build' && !state.box.open && window.m
 
 document.addEventListener('change', e => {
   if (e.target.id === 'teamSel') { switchTeam(e.target.value); return; }
+  if (e.target.dataset.libName) {
+    const en = libById(e.target.dataset.libName);
+    if (en) { en.label = (e.target.value.trim() || poke(en.pid).name).slice(0, 32); save(); renderAll(); }
+    return;
+  }
   if (e.target.dataset.stat != null) {
     const s = team()[state.selected];
     if (!s) return;
@@ -656,6 +751,8 @@ document.addEventListener('mouseover', e => {
   if (c && state.box.open) showInfo(+c.dataset.info);
 });
 document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.matches('input[data-lib-name]')) { e.target.blur(); return; }
+  if (e.key === 'Enter' && e.target.matches('.scard')) { e.target.click(); return; }
   if (e.key === 'Escape') {
     if (state.picker) closePicker();
     else if ($('#filters').classList.contains('open')) closeFilters();

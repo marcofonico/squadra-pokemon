@@ -5,6 +5,7 @@ Dashboard statica (HTML/CSS/JS, nessuna build) per creare una squadra e analizza
 ## Funzioni
 - Ricerca nel box Pokémon e nei selettori di mosse e oggetti
 - Statistiche modificabili per ogni Pokémon (con ripristino)
+- Pokémon salvati (abilità, mosse, oggetto, stat) da riusare dal box, voce «Salvati»
 - Più squadre salvate in automatico nel browser, nome modificabile
 - Pagina di confronto fino a 3 squadre (sintesi, medie, debolezze per tipo)
 
