@@ -4,10 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#8fd63f">
-  <title>Pokémon Team Builder · Ottava generazione</title>
-  <meta name="description" content="Crea la tua squadra Pokémon e analizza debolezze, resistenze e coperture offensive (Spada/Scudo).">
+  <title>Crea la tua squadra Pokemon: Generatore e Confronto</title>
+  <meta name="description" content="Genera la tua squadra pokemon in modo immediato: scegli le abilità, gli oggetti e modifica le stat. Cura la tua squadra in ogni dettaglio.">
+  <link rel="canonical" href="https://marcofonico.github.io/squadra-pokemon/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:url" content="https://marcofonico.github.io/squadra-pokemon/">
+  <meta property="og:title" content="Crea la tua squadra Pokemon: Generatore e Confronto">
+  <meta property="og:description" content="Genera la tua squadra pokemon in modo immediato: scegli le abilità, gli oggetti e modifica le stat. Cura la tua squadra in ogni dettaglio.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Crea la tua squadra Pokemon: Generatore e Confronto">
+  <meta name="twitter:description" content="Genera la tua squadra pokemon in modo immediato: scegli le abilità, gli oggetti e modifica le stat. Cura la tua squadra in ogni dettaglio.">
   <link rel="icon" href="assets/icons/25.png">
-  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
   <div class="app" id="app">
@@ -15,6 +24,7 @@
     <!-- Sidebar: ricerca, generazioni, giochi -->
     <aside class="sidebar" id="filters" aria-label="Filtri">
       <button class="drawer-close" data-action="close-filters" aria-label="Chiudi filtri">✕</button>
+      <h1 class="site-title">Crea la tua squadra pokemon</h1>
       <label class="search">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
         <input id="search" type="search" placeholder="Cerca Pokémon…" autocomplete="off" spellcheck="false">
@@ -129,6 +139,6 @@
   <div class="drawer-backdrop" id="backdrop" data-action="close-filters"></div>
   <div class="loading" id="loading">Caricamento Pokédex…</div>
 
-  <script type="module" src="js/app.js?v=4"></script>
+  <script type="module" src="js/app.js?v=5"></script>
 </body>
 </html>

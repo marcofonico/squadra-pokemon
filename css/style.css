@@ -591,3 +591,6 @@ button:focus-visible, select:focus-visible, input:focus-visible, [role="button"]
   .picker-wrap { align-items: flex-end; }
   .picker { max-height: 86vh; max-height: 86dvh; }
 }
+
+.site-title { margin: 0 0 12px; font-size: 15px; line-height: 1.25; font-weight: 800; color: #fff; text-shadow: 0 1px 0 var(--lime-dd); }
+@media (max-width: 1180px) { .site-title { margin-right: 44px; } }
