@@ -16,7 +16,7 @@
   <meta name="twitter:title" content="Crea la tua squadra Pokemon: Generatore e Confronto">
   <meta name="twitter:description" content="Genera la tua squadra pokemon in modo immediato: scegli le abilità, gli oggetti e modifica le stat. Cura la tua squadra in ogni dettaglio.">
   <link rel="icon" href="assets/icons/25.png">
-  <link rel="stylesheet" href="css/style.css?v=8">
+  <link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
   <div class="app" id="app">
@@ -85,6 +85,7 @@
 
       <!-- Box di selezione (si apre dagli slot) -->
       <div class="box" id="box" hidden role="dialog" aria-modal="true" aria-labelledby="boxTitle">
+        <div class="box-panel">
         <div class="box-head">
           <button class="pill ghost mobile-only" data-action="open-filters">Filtri</button>
           <h2 id="boxTitle">Box</h2>
@@ -108,6 +109,7 @@
         <div class="box-foot">
           <button class="pill danger" id="boxRemove" data-action="remove-slot">Rimuovi dallo slot</button>
           <span class="count" id="boxCount"></span>
+        </div>
         </div>
       </div>
     </main>
@@ -143,6 +145,6 @@
   <div class="drawer-backdrop" id="backdrop" data-action="close-filters"></div>
   <div class="loading" id="loading">Caricamento Pokédex…</div>
 
-  <script type="module" src="js/app.js?v=8"></script>
+  <script type="module" src="js/app.js?v=10"></script>
 </body>
 </html>

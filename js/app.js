@@ -1,4 +1,4 @@
-import { Calc, fmtMult } from './calc.js?v=8';
+import { Calc, fmtMult } from './calc.js?v=10';
 
 /* ---------- costanti ---------- */
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
@@ -602,6 +602,9 @@ function addTeam(slots, name) {
 
 /* ---------- eventi ---------- */
 document.addEventListener('click', e => {
+  // tocco fuori dal riquadro del box (sullo sfondo scurito): chiude la selezione
+  if (e.target.id === 'box') { closeBox(); return; }
+  if (e.target.id === 'pickerBackdrop') return;
   const el = e.target.closest('[data-action]');
   if (!el) return;
   const a = el.dataset.action;
